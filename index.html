@@ -3,52 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="monetag" content="69815d4a743c92fd18e1ce43cb843de4"> 
+
     <title>Viral Bot Store - Premium Portal</title>
-    
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <script src='//libtl.com/sdk.js' data-zone='10380144' data-sdk='show_10380144'></script>
-    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     
     <style>
-        :root { --primary: #2563eb; --accent: linear-gradient(135deg, #3b82f6, #8b5cf6); --bg: #f1f5f9; --white: #ffffff; --text: #1e293b; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); }
-        header { background: var(--white); padding: 12px 6%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
-        .logo { font-size: 20px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
-        .user-profile { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; background: #ddd; }
+        :root { 
+            --primary: #2563eb; 
+            --accent: linear-gradient(135deg, #3b82f6, #8b5cf6); 
+            --bg: #f1f5f9; 
+            --white: #ffffff; 
+            --text: #1e293b; 
+            --card-border: #e2e8f0;
+        }
+
+        /* ডার্ক মোড ভেরিয়েবল */
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --white: #1e293b;
+            --text: #f1f5f9;
+            --card-border: #334155;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background 0.3s, color 0.3s; }
+
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            /* English text automatic font preference */
+            font-family: 'BUILT TITLING BD', sans-serif; 
+        }
+
+        /* Bengali text and titles automatic font preference */
+        h3, .btn-main, span, input, .nav-item span { 
+            font-family: 'Li Ador Noirrit Bold', 'Segoe UI', sans-serif; 
+        }
+
+        header { 
+            background: var(--white); 
+            padding: 12px 6%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1001; 
+        }
+
+        .logo { font-size: 18px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
+        
+        .header-right { display: flex; align-items: center; gap: 15px; }
+
+        .theme-toggle { cursor: pointer; font-size: 20px; color: var(--primary); }
+
+        .user-profile { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
+
+        .sticky-search {
+            position: sticky;
+            top: 59px;
+            z-index: 1000;
+            background: var(--white);
+            padding: 10px 6%;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .search-box { position: relative; max-width: 600px; margin: 0 auto; }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+            outline: none;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .search-box i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+
         .content-section { display: none; padding: 15px; padding-bottom: 110px; max-width: 600px; margin: 0 auto; }
         .content-section.active { display: block; animation: fadeIn 0.4s ease; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .v-card { background: var(--white); border-radius: 24px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.04); margin-bottom: 25px; border: 1px solid #e2e8f0; }
-        .v-thumb { width: 100%; aspect-ratio: 16/9; position: relative; background: #cbd5e1; overflow: hidden; cursor: pointer; }
+
+        .v-card { background: var(--white); border-radius: 24px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.1); margin-bottom: 25px; border: 1px solid var(--card-border); }
+        .v-thumb { width: 100%; aspect-ratio: 16/9; position: relative; background: #475569; overflow: hidden; }
         .v-thumb img { width: 100%; height: 100%; object-fit: cover; display: none; }
         .v-thumb.revealed img { display: block; }
         .badge { position: absolute; top: 15px; left: 15px; background: var(--accent); color: white; padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 700; z-index: 5; }
         
-        .action-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.1); z-index: 4; transition: 0.3s; }
-        .v-thumb.revealed .action-overlay { display: none; }
-        
         .v-info { padding: 20px; }
         .v-info h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
-        .meta { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #64748b; margin-bottom: 15px; }
-        .view-box { background: #eff6ff; color: var(--primary); padding: 4px 10px; border-radius: 8px; font-weight: 700; }
+        .meta { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #94a3b8; margin-bottom: 15px; }
+        .view-box { background: rgba(37, 99, 235, 0.1); color: var(--primary); padding: 4px 10px; border-radius: 8px; font-weight: 700; }
         .btn-main { width: 100%; padding: 14px; border: none; border-radius: 15px; background: var(--primary); color: white; font-weight: 700; cursor: pointer; }
-        .nav-wrapper { position: fixed; bottom: 15px; left: 5%; right: 5%; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 1000; }
+
+        .nav-wrapper { position: fixed; bottom: 15px; left: 5%; right: 5%; background: var(--white); border: 1px solid var(--card-border); border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 1000; }
         .bottom-nav { display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 8px; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; cursor: pointer; padding: 8px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; cursor: pointer; padding: 8px; font-size: 12px; }
         .nav-item.active { color: var(--primary); }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
     <header>
         <div class="logo"><i class="fas fa-robot"></i> Viral Bot Store</div>
-        <img id="userAvatar" class="user-profile" src="https://i.pravatar.cc/100" alt="U">
+        <div class="header-right">
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <i id="themeIcon" class="fas fa-moon"></i>
+            </div>
+            <img id="userAvatar" class="user-profile" src="https://i.pravatar.cc/100" alt="U">
+        </div>
     </header>
+
+    <div class="sticky-search">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="সার্চ করুন..." onkeyup="filterContent()">
+            <i class="fa fa-search"></i>
+        </div>
+    </div>
 
     <section id="video" class="content-section active"><div id="video-list"></div></section>
     <section id="image" class="content-section"><div id="image-list"></div></section>
@@ -63,9 +141,23 @@
     </div>
 
     <script>
-        const directLink = "https://otieu.com/4/10346483";
+        // ডার্ক মোড ফাংশন
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            icon.classList.replace(isDark ? 'fa-sun' : 'fa-moon', isDark ? 'fa-moon' : 'fa-sun');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        }
 
-        // Firebase Setup
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
+        }
+
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyByCC_vYgY_vA92s6OHDbKhbkTqnycYb5Q",
             authDomain: "stream-vibe-b4900.firebaseapp.com",
@@ -78,42 +170,15 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- Telegram Data Handling Start ---
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        const userData = tg.initDataUnsafe?.user;
-
-        if (userData) {
-            const fullName = userData.first_name + (userData.last_name ? " " + userData.last_name : "");
-            const photoUrl = userData.photo_url || "https://i.pravatar.cc/100";
-
-            // Update UI
-            document.getElementById('userAvatar').src = photoUrl;
-
-            // Save to Firebase (for Admin Panel)
-            db.ref('active_users/' + userData.id).set({
-                username: fullName,
-                photo: photoUrl,
-                platform: "Telegram",
-                lastActive: new Date().toLocaleString()
-            });
-        }
-        // --- Telegram Data Handling End ---
-
-        function showMonetagAd() {
-            if (typeof show_10380144 === 'function') {
-                show_10380144().catch(e => console.error('Ad error', e));
-            }
-        }
-
-        setInterval(showMonetagAd, 40000);
+        let currentCategory = 'video';
 
         function tab(id, el) {
+            currentCategory = id;
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             el.classList.add('active');
+            document.getElementById('searchInput').value = '';
             loadData(id);
         }
 
@@ -124,25 +189,21 @@
                 snapshot.forEach(child => {
                     const item = child.val();
                     const id = child.key;
-                    const btnLabel = (category === 'image') ? 'View Image' : 'Show Thumbnail';
-                    
                     html += `
-                    <div class="v-card">
-                        <div class="v-thumb" id="t-${id}" onclick="handleIconClick()">
+                    <div class="v-card content-item">
+                        <div class="v-thumb" id="t-${id}">
                             <span class="badge">${item.tag}</span>
                             <img src="${item.thumb}">
-                            <div class="action-overlay">
-                                <i class="fa fa-play" style="font-size:40px; color:white;"></i>
-                            </div>
+                            <div class="action-overlay"><i class="fa fa-play" style="font-size:40px; color:white;"></i></div>
                         </div>
                         <div class="v-info">
-                            <h3>${item.title}</h3>
+                            <h3 class="title-text">${item.title}</h3>
                             <div class="meta">
                                 <span><i class="fa fa-user-circle"></i> Admin</span>
                                 <span class="view-box"><i class="fa fa-eye"></i> ${item.views || 0}</span>
                             </div>
-                            <button class="btn-main" id="b-${id}" onclick="initAction('${id}', '${category}', '${item.contentLink}', ${item.adsCount})">
-                                ${btnLabel}
+                            <button class="btn-main" id="b-${id}" onclick="initAction('${id}', '${item.category}', '${item.contentLink}', ${item.adsCount})">
+                                ${category === 'image' ? 'View Image' : 'Show Thumbnail'}
                             </button>
                         </div>
                     </div>`;
@@ -151,41 +212,29 @@
             });
         }
 
-        function handleIconClick() {
-            window.open(directLink, '_blank');
+        function filterContent() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll(`#${currentCategory}-list .content-item`);
+            items.forEach(item => {
+                const title = item.querySelector('.title-text').innerText.toLowerCase();
+                item.style.display = title.includes(query) ? "block" : "none";
+            });
         }
-
-        let currentClickCount = {};
 
         function initAction(id, type, link, ads) {
             db.ref('contents/' + id + '/views').transaction(c => (c || 0) + 1);
-            const thumb = document.getElementById(`t-${id}`);
+            document.getElementById(`t-${id}`).classList.add('revealed');
             const btn = document.getElementById(`b-${id}`);
-
-            if (type === 'image') {
-                thumb.classList.add('revealed');
-                btn.innerText = "Viewing...";
-                setTimeout(() => window.open(link, '_blank'), 300);
-            } else {
-                thumb.classList.add('revealed');
-                if (!currentClickCount[id]) currentClickCount[id] = 0;
-                btn.innerText = `Watch Ads (${ads})`;
+            if (type === 'image') { window.open(link, '_blank'); } 
+            else {
+                let left = ads;
+                btn.innerText = `Watch Ads (${left})`;
                 btn.onclick = () => {
-                    currentClickCount[id]++;
-                    let remaining = ads - currentClickCount[id];
-                    if (currentClickCount[id] < ads) {
-                        showMonetagAd();
-                        btn.innerText = `Watch Ads (${remaining})`;
-                    } else {
-                        btn.innerText = "Opening Video...";
-                        window.open(directLink, '_blank');
-                        setTimeout(() => { window.location.href = link; }, 800);
-                        currentClickCount[id] = 0; 
-                    }
+                    if (left > 1) { left--; btn.innerText = `Watch Ads (${left})`; } 
+                    else { window.location.href = link; }
                 };
             }
         }
-
         loadData('video');
     </script>
 </body>
